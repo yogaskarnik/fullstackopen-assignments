@@ -1,10 +1,18 @@
 import { useState } from "react";
 
-const StatisticsLine = (props) => {
+const StatisticsLine = ({ text, value }) => {
   return (
     <div>
-      {props.text}&nbsp;
-      {props.value}
+      <table style={{ width: "120px", tableLayout: "fixed" }}>
+        <tbody>
+          <tr style={{ height: "1em" }}>
+            <td style={{ overflow: "hidden", whiteSpace: "nowrap" }}>{text}</td>
+            <td style={{ overflow: "hidden" }}>
+              {value} {text === "positive" ? " %" : ""}
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 };
@@ -24,7 +32,7 @@ const Statistics = ({ good, neutral, bad, total, average, positive }) => {
       <StatisticsLine text="good" value={good} />
       <StatisticsLine text="neutral" value={neutral} />
       <StatisticsLine text="bad" value={bad} />
-      <StatisticsLine text="total" value={total} />
+      <StatisticsLine text="all" value={total} />
       <StatisticsLine text="average" value={average} />
       <StatisticsLine text="positive" value={positive} />
     </div>
@@ -50,8 +58,8 @@ const App = () => {
 
     setGood(updatedGood);
     setTotal(updatedTotal);
-    setAverage(totalAvg / updatedTotal);
-    setPositive((updatedGood / updatedTotal) * 100);
+    setAverage(parseFloat(totalAvg / updatedTotal).toFixed(1));
+    setPositive(parseFloat((updatedGood / updatedTotal) * 100).toFixed(1));
   };
 
   const handleBad = () => {
@@ -61,7 +69,7 @@ const App = () => {
 
     setBad(updatedBad);
     setTotal(updatedTotal);
-    setAverage(totalAvg / updatedTotal);
+    setAverage(parseFloat(totalAvg / updatedTotal).toFixed(1));
   };
   const handleNeutral = () => {
     const updatedNeutral = neutral + 1;
@@ -69,7 +77,7 @@ const App = () => {
 
     setNeutral(updatedNeutral);
     setTotal(updatedTotal);
-    setAverage(average);
+    setAverage(parseFloat(average).toFixed(1));
   };
 
   return (
