@@ -16,6 +16,11 @@ const App = () => {
 
   const [selected, setSelected] = useState(0);
   const [votes, setVote] = useState(Array(anecdotes.length).fill(0));
+  const maxVotes = votes.reduce(
+    (previousValue, currentValue, currentIndex) =>
+      currentValue > votes[previousValue] ? currentIndex : previousValue,
+    0
+  );
 
   const updateVote = () => {
     const udpatedVote = votes.map((value, index) => {
@@ -30,12 +35,16 @@ const App = () => {
 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       {anecdotes[selected]}
       <p>has {votes[selected]} votes</p>
       <p>
-        <button onClick={updateVote}>{"vote"}</button>
-        <button onClick={nextAnecdote}>{"next anecdote"}</button>
+        <button onClick={updateVote}>vote</button>
+        <button onClick={nextAnecdote}>next anecdote</button>
       </p>
+      <h1>Anecdote with most votes</h1>
+      <p>{anecdotes[maxVotes]}</p>
+      <p>has {votes[maxVotes]} votes</p>
     </div>
   );
 };
