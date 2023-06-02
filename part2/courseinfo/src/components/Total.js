@@ -1,5 +1,4 @@
 const Total = (props) => {
-  console.log("total ", props.total);
   const sum = props.total.reduce((accumulator, object) => {
     return accumulator + object.excercises;
   }, 0);
