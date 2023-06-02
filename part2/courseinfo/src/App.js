@@ -1,3 +1,4 @@
+//Importing Course component as a separate module
 import Course from "./components/Course";
 
 const App = () => {
