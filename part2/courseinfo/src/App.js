@@ -20,6 +20,11 @@ const App = () => {
         excercises: 14,
         id: 3,
       },
+      {
+        name: "Redux",
+        excercises: 11,
+        id: 4,
+      },
     ],
   };
   return <Course course={course} />;
