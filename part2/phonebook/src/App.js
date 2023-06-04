@@ -1,17 +1,22 @@
 import { useState } from "react";
 
 function App() {
-  const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
+  const [persons, setPersons] = useState([{ id: 1, name: "Arto Hellas" }]);
   const [newName, setNewName] = useState("");
 
   const addContact = (event) => {
     event.preventDefault();
+    const isDuplicate = persons.filter((person) => person.name === newName);
+    if (isDuplicate.length !== 0) {
+      alert(`${newName} is already added to phonebook`);
+      return;
+    }
 
     const contact = {
       name: newName,
       id: persons.length + 1,
     };
-    console.log("contact ", contact);
+
     setPersons(persons.concat(contact));
     setNewName("");
   };
