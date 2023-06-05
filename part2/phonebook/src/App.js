@@ -1,11 +1,17 @@
 import { useState } from "react";
+import ContactPersonForm from "./components/ContactPersonForm";
+import PersonView from "./components/PersonView";
+import FilterView from "./components/FilterView";
 
 function App() {
   const [persons, setPersons] = useState([
     { id: 1, name: "Arto Hellas", number: "040 - 1234567" },
+    { id: 2, name: "Ada Lovelace", number: "033 - 1234567" },
+    { id: 3, name: "Martin Fowler", number: "034 - 1234567" },
   ]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+  const [newSearch, setNewSearch] = useState("");
 
   const addContact = (event) => {
     event.preventDefault();
@@ -27,35 +33,35 @@ function App() {
   };
 
   const handleContactChange = (event) => {
-    console.log(event.target.value);
     setNewName(event.target.value);
   };
 
   const handleNumberChange = (event) => {
-    console.log(event.target.value);
     setNewNumber(event.target.value);
+  };
+
+  const handleSearchChange = (event) => {
+    const searchValue = event.target.value;
+    const personFilter = persons.filter((person) =>
+      person.name.toLowerCase().includes(searchValue.toLowerCase())
+    );
+    setNewSearch(event.target.value);
+    setPersons(personFilter);
   };
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addContact}>
-        <div>
-          name: <input value={newName} onChange={handleContactChange} />
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      {persons.map((person) => (
-        <p key={person.id}>
-          {person.name} {person.number}
-        </p>
-      ))}
+      <FilterView value={newSearch} onSearchChange={handleSearchChange} />
+      <h3>Add a new</h3>
+      <ContactPersonForm
+        event={addContact}
+        value={[newName, newNumber]}
+        onContactChange={handleContactChange}
+        onNumberChange={handleNumberChange}
+      />
+      <h3>Numbers</h3>
+      <PersonView persons={persons} />
     </div>
   );
 }
