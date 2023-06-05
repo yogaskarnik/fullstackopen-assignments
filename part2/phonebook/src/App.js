@@ -8,6 +8,7 @@ function App() {
     { id: 1, name: "Arto Hellas", number: "040 - 1234567" },
     { id: 2, name: "Ada Lovelace", number: "033 - 1234567" },
     { id: 3, name: "Martin Fowler", number: "034 - 1234567" },
+    { id: 4, name: "Mary Poppendieck", number: "39-23-6423122" },
   ]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
