@@ -1,18 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ContactPersonForm from "./components/ContactPersonForm";
 import PersonView from "./components/PersonView";
 import FilterView from "./components/FilterView";
+import axios from "axios";
 
 function App() {
-  const [persons, setPersons] = useState([
-    { id: 1, name: "Arto Hellas", number: "040 - 1234567" },
-    { id: 2, name: "Ada Lovelace", number: "033 - 1234567" },
-    { id: 3, name: "Martin Fowler", number: "034 - 1234567" },
-    { id: 4, name: "Mary Poppendieck", number: "39-23-6423122" },
-  ]);
+  const [persons, setPersons] = useState("");
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newSearch, setNewSearch] = useState("");
+
+  useEffect(() => {
+    axios.get("http://localhost:3001/persons").then((response) => {
+      setPersons(response.data);
+    });
+  }, []);
 
   const addContact = (event) => {
     event.preventDefault();
@@ -62,7 +64,8 @@ function App() {
         onNumberChange={handleNumberChange}
       />
       <h3>Numbers</h3>
-      <PersonView persons={persons} />
+      {console.log(persons)}
+      {<PersonView persons={persons} />}
     </div>
   );
 }
