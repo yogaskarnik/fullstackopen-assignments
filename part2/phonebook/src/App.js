@@ -31,10 +31,8 @@ function App() {
 
     personService.create(contact).then((newContact) => {
       setPersons(persons.concat(newContact));
-      console.log("added");
       setNewName("");
       setNewNumber("");
-      console.log("added end");
     });
   };
 
