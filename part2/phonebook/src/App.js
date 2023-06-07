@@ -2,17 +2,17 @@ import { useState, useEffect } from "react";
 import ContactPersonForm from "./components/ContactPersonForm";
 import PersonView from "./components/PersonView";
 import FilterView from "./components/FilterView";
-import axios from "axios";
+import personService from "./services/person";
 
 function App() {
-  const [persons, setPersons] = useState("");
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newSearch, setNewSearch] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
-      setPersons(response.data);
+    personService.getAll().then((newContact) => {
+      setPersons(newContact);
     });
   }, []);
 
@@ -27,12 +27,15 @@ function App() {
     const contact = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1,
     };
 
-    setPersons(persons.concat(contact));
-    setNewName("");
-    setNewNumber("");
+    personService.create(contact).then((newContact) => {
+      setPersons(persons.concat(newContact));
+      console.log("added");
+      setNewName("");
+      setNewNumber("");
+      console.log("added end");
+    });
   };
 
   const handleContactChange = (event) => {
@@ -64,7 +67,6 @@ function App() {
         onNumberChange={handleNumberChange}
       />
       <h3>Numbers</h3>
-      {console.log(persons)}
       {<PersonView persons={persons} />}
     </div>
   );

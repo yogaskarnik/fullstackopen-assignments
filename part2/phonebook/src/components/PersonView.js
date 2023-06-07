@@ -1,5 +1,4 @@
-const PersonView = (props) => {
-  const persons = props.persons;
+const PersonView = ({ persons }) => {
   return (
     <div>
       {persons.map((person) => (
