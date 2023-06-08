@@ -1,14 +1,9 @@
-const ContactPersonForm = ({
-  event,
-  value,
-  onContactChange,
-  onNumberChange,
-}) => {
+const ContactPersonForm = ({ event, value, onNameChange, onNumberChange }) => {
   return (
     <div>
       <form onSubmit={event}>
         <div>
-          name: <input value={value.newName} onChange={onContactChange} />
+          name: <input value={value.newName} onChange={onNameChange} />
         </div>
         <div>
           number: <input value={value.newNumber} onChange={onNumberChange} />
