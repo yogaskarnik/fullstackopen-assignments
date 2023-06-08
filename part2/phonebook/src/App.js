@@ -20,7 +20,7 @@ function App() {
     event.preventDefault();
     const isDuplicate = persons.filter((person) => person.name === newName);
     if (isDuplicate.length !== 0) {
-      alert(`${newName} is already added to phonebook`);
+      window.confirm(`${newName} is already added to phonebook`);
       return;
     }
 
@@ -33,6 +33,13 @@ function App() {
       setPersons(persons.concat(newContact));
       setNewName("");
       setNewNumber("");
+    });
+  };
+
+  const removeContact = (toDelete) => {
+    personService.deleteContact(toDelete.id, toDelete).then(() => {
+      window.confirm(`Delete ${toDelete.name}`);
+      setPersons(persons.filter((person) => person.id !== toDelete.id));
     });
   };
 
@@ -65,7 +72,13 @@ function App() {
         onNumberChange={handleNumberChange}
       />
       <h3>Numbers</h3>
-      {<PersonView persons={persons} />}
+      {persons.map((person) => (
+        <PersonView
+          key={person.id}
+          person={person}
+          removeContact={() => removeContact(person)}
+        />
+      ))}
     </div>
   );
 }

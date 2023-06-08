@@ -1,11 +1,10 @@
-const PersonView = ({ persons }) => {
+const PersonView = ({ person, removeContact }) => {
   return (
     <div>
-      {persons.map((person) => (
-        <p key={person.id}>
-          {person.name} {person.number}
-        </p>
-      ))}
+      <p>
+        {person.name} {person.number}{" "}
+        <button onClick={removeContact}>delete</button>
+      </p>
     </div>
   );
 };
