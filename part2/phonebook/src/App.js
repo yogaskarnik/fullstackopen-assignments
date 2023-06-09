@@ -23,7 +23,6 @@ function App() {
   const addContact = (event) => {
     event.preventDefault();
     const isDuplicate = persons.find((person) => person.name === newName);
-
     if (isDuplicate !== undefined) {
       let duplicate = { ...isDuplicate, number: newNumber };
       window.confirm(
@@ -36,29 +35,29 @@ function App() {
             person.id !== duplicate.id ? person : updatedContact
           )
         );
-        setNewName(null);
-        setNewNumber(null);
         setSuccessMessage(`Updated ${duplicate.name}`);
         setTimeout(() => {
           setErrorMessage(null);
         }, 5000);
       });
-    }
-    if (newName && newNumber) {
+      setNewName("");
+      setNewNumber("");
+    } else if (newName && newNumber) {
       const newPerson = {
         name: newName,
         number: newNumber,
       };
       personService.create(newPerson).then((newContact) => {
         setPersons(persons.concat(newContact));
-        setNewName("");
-        setNewNumber("");
+
         setSuccessMessage(`Added ${newPerson.name}`);
         setTimeout(() => {
           setErrorMessage(null);
         }, 5000);
       });
     }
+    setNewName("");
+    setNewNumber("");
   };
 
   const removeContact = (toDelete) => {
@@ -110,7 +109,8 @@ function App() {
       <h3>Add a new</h3>
       <ContactPersonForm
         event={addContact}
-        value={[newName, newNumber]}
+        newName={newName}
+        newNumber={newNumber}
         onNameChange={handleNameChange}
         onNumberChange={handleNumberChange}
       />
