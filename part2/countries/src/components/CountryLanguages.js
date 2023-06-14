@@ -1,18 +1,16 @@
-const CountryLanguages = ({ countryInfo }) => {
+const CountryLanguages = ({ country }) => {
+  if (!country) {
+    return null;
+  }
+
   return (
     <div>
-      {Object.values(countryInfo).length > 0 ? (
-        <>
-          <h3>languages</h3>
-          <ul>
-            {Object.values(countryInfo.languages || {}).map((lang, key) => (
-              <li key={key}>{lang}</li>
-            ))}
-          </ul>
-        </>
-      ) : (
-        ""
-      )}
+      <h3>Languages</h3>
+      <ul>
+        {Object.values(country.languages || {}).map((language, key) => (
+          <li key={key}>{language}</li>
+        ))}
+      </ul>
     </div>
   );
 };

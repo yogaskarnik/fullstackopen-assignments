@@ -1,15 +1,18 @@
-const CountryData = ({ countryInfo }) => {
+const CountryData = ({ countryInfo, onViewDetails }) => {
+  if (countryInfo.length === 0) {
+    return null;
+  }
+
   return (
     <div>
-      {Object.keys(countryInfo).length > 0 ? (
-        <>
-          <h1>{countryInfo.name?.common}</h1>
-          <p>capital {countryInfo.capital}</p>
-          <p>area {countryInfo.area}</p>
-        </>
-      ) : (
-        <p>No country found</p>
-      )}
+      {countryInfo.map((country, index) => (
+        <div key={index}>
+          <p>
+            {country.name?.common}
+            <button onClick={() => onViewDetails(country)}>show</button>
+          </p>
+        </div>
+      ))}
     </div>
   );
 };

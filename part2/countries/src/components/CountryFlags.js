@@ -1,15 +1,14 @@
-const CountryFlags = ({ countryInfo }) => {
+const CountryFlags = ({ country }) => {
+  if (!country) {
+    return null;
+  }
+
   return (
     <div>
-      {Object.keys(countryInfo).length > 0 ? (
-        <>
-          <p>
-            <img src={countryInfo.flags.png} alt={countryInfo.flags.alt} />;
-          </p>
-        </>
-      ) : (
-        ""
-      )}
+      <h3>Flags</h3>
+      <p>
+        <img src={country.flags.png} alt={country.flags.alt} />
+      </p>
     </div>
   );
 };
