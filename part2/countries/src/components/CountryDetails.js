@@ -6,8 +6,8 @@ const CountryDetails = ({ country }) => {
   return (
     <div>
       <h2>{country.name?.common}</h2>
-      {country.capital && <p>Capital: {country.capital}</p>}
-      {country.area && <p>Area: {country.area} km²</p>}
+      {country.capital && <p>capital {country.capital}</p>}
+      {country.area && <p>area {country.area}</p>}
     </div>
   );
 };

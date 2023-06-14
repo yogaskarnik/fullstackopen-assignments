@@ -4,11 +4,13 @@ import CountryData from "./components/CountryData";
 import CountryLanguages from "./components/CountryLanguages";
 import CountryFlags from "./components/CountryFlags";
 import CountryDetails from "./components/CountryDetails";
+import DisplayWeather from "./components/DisplayWeather";
 
 const App = () => {
   const [countryName, setCountryName] = useState("");
   const [countryInfo, setCountryInfo] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
+  const [weather, setWeather] = useState("");
 
   const filterCountries = (countries, name) => {
     return countries.filter((country) =>
@@ -31,11 +33,15 @@ const App = () => {
   const onNameChange = (event) => {
     const countryToSearch = event.target.value;
     setCountryName(countryToSearch);
-    console.log("countryToSearch ", countryToSearch);
   };
 
   const onViewDetails = (country) => {
     setSelectedCountry(country);
+    countryService
+      .getWeather(country.latlng[0], country.latlng[1])
+      .then((weather) => {
+        setWeather(weather);
+      });
   };
 
   return (
@@ -46,6 +52,7 @@ const App = () => {
           <CountryDetails country={selectedCountry} />
           <CountryLanguages country={selectedCountry} />
           <CountryFlags country={selectedCountry} />
+          <DisplayWeather country={selectedCountry} weather={weather} />
         </>
       ) : (
         <CountryData countryInfo={countryInfo} onViewDetails={onViewDetails} />
