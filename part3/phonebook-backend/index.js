@@ -24,14 +24,17 @@ let persons = [
   },
 ];
 
+//Handle no resourse
 app.get('/', (request, response) => {
   response.sendStatus(404).end();
 });
 
+//Display all persons
 app.get('/api/persons', (request, response) => {
   response.send(persons);
 });
 
+//Display person info
 app.get('/info', (request, response) => {
   const info = {
     noOfPersons: `Phonebook has info for ${persons.length} people`,
@@ -39,6 +42,24 @@ app.get('/info', (request, response) => {
   };
   const infoToSend = `<p>${info.noOfPersons}<br/><br/>${info.timeOfProcessing}</p>`;
   response.send(infoToSend).end();
+});
+
+//Get person with id
+app.get('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id);
+  const person = persons.find((person) => person.id === id);
+  if (person) {
+    response.send(person);
+  } else {
+    response.sendStatus(404).end();
+  }
+});
+
+//Delete person with id
+app.delete('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id);
+  persons = persons.filter((person) => person.id !== id);
+  response.status(204).end;
 });
 
 const PORT = 3001;
