@@ -16,13 +16,12 @@ app.use(
     ':method :url :status :res[content-length] - :response-time ms :post-params'
   )
 );
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' });
+};
+
 app.use(cors());
 app.use(express.static('build'));
-
-//Handle no resourse
-app.get('/', (req, res) => {
-  res.json('no resource found');
-});
 
 //Display all persons
 app.get('/api/persons', (req, res) => {
@@ -44,21 +43,19 @@ app.get('/info', (req, res) => {
 });
 
 //Get person with id
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
   Persons.findById(req.params.id)
     .then((person) => {
       res.json(person);
     })
-    .catch((error) => {
-      res.json('error fetch contact with id ', req.params.id);
-    });
+    .catch((error) => next(error));
 });
 
 //Delete person with id
 app.delete('/api/persons/:id', (req, res) => {
   Persons.findByIdAndRemove(req.params.id)
     .then((result) => res.status(204).end())
-    .catch((error) => res.status(400).send({ error: 'error deleting record' }));
+    .catch((error) => next(error));
 });
 
 //Create new person
@@ -79,6 +76,18 @@ app.post('/api/persons', (req, res) => {
     res.json(result);
   });
 });
+app.use(unknownEndpoint);
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' });
+  }
+
+  next(error);
+};
+app.use(errorHandler);
 
 const PORT = process.env.PORT;
 app.listen(PORT);
