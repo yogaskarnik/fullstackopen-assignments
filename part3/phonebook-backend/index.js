@@ -77,6 +77,7 @@ app.post('/api/persons', (req, res) => {
   });
 });
 
+//Update person with id
 app.put('/api/persons/:id', (request, response, next) => {
   const body = request.body;
   const person = {
@@ -99,7 +100,6 @@ const errorHandler = (error, request, response, next) => {
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' });
   }
-
   next(error);
 };
 app.use(errorHandler);
