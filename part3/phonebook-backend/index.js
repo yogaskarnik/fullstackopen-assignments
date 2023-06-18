@@ -34,8 +34,6 @@ app.get('/api/persons', (req, res) => {
 //Display person info
 app.get('/info', (req, res) => {
   Persons.find({}).then((result) => {
-    console.log(result);
-
     const info = {
       noOfPersons: `Phonebook has info for ${result.length} people`,
       timeOfProcessing: Date(),
