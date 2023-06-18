@@ -56,9 +56,9 @@ app.get('/api/persons/:id', (req, res) => {
 
 //Delete person with id
 app.delete('/api/persons/:id', (req, res) => {
-  Persons.deleteOne(req.params.id)
-    .then((result) => res.json('deleted record'))
-    .catch((error) => res.json('error deleting record'));
+  Persons.findByIdAndRemove(req.params.id)
+    .then((result) => res.status(204).end())
+    .catch((error) => res.status(400).send({ error: 'error deleting record' }));
 });
 
 //Create new person
