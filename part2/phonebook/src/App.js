@@ -1,18 +1,18 @@
-import { useState, useEffect } from "react";
-import ContactPersonForm from "./components/ContactPersonForm";
-import PersonView from "./components/PersonView";
-import FilterView from "./components/FilterView";
-import personService from "./services/person";
-import "./index.css";
-import Notification from "./components/Notification";
+import { useState, useEffect } from 'react';
+import ContactPersonForm from './components/ContactPersonForm';
+import PersonView from './components/PersonView';
+import FilterView from './components/FilterView';
+import personService from './services/person';
+import './index.css';
+import Notification from './components/Notification';
 
 function App() {
   const [persons, setPersons] = useState([]);
-  const [newName, setNewName] = useState("");
-  const [newNumber, setNewNumber] = useState("");
-  const [newSearch, setNewSearch] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+  const [newName, setNewName] = useState('');
+  const [newNumber, setNewNumber] = useState('');
+  const [newSearch, setNewSearch] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     personService.getAll().then((newContact) => {
@@ -40,24 +40,29 @@ function App() {
           setErrorMessage(null);
         }, 5000);
       });
-      setNewName("");
-      setNewNumber("");
+      setNewName('');
+      setNewNumber('');
     } else if (newName && newNumber) {
       const newPerson = {
         name: newName,
         number: newNumber,
       };
-      personService.create(newPerson).then((newContact) => {
-        setPersons(persons.concat(newContact));
+      personService
+        .create(newPerson)
+        .then((newContact) => {
+          setPersons(persons.concat(newContact));
 
-        setSuccessMessage(`Added ${newPerson.name}`);
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);
-      });
+          setSuccessMessage(`Added ${newPerson.name}`);
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000);
+        })
+        .catch((error) => {
+          setErrorMessage(error.response.data.error);
+        });
     }
-    setNewName("");
-    setNewNumber("");
+    setNewName('');
+    setNewNumber('');
   };
 
   const removeContact = (toDelete) => {
@@ -103,7 +108,7 @@ function App() {
       <h1>Phonebook</h1>
       <Notification
         message={errorMessage || successMessage}
-        type={errorMessage ? "error" : "succes"}
+        type={errorMessage ? 'error' : 'succes'}
       />
       <FilterView value={newSearch} onSearchChange={handleSearchChange} />
       <h3>Add a new</h3>
