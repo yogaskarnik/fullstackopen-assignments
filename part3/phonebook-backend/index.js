@@ -66,12 +66,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
 //Create new person
 app.post('/api/persons', (req, res, next) => {
   const body = req.body;
-  if (!body.name || !body.number) {
-    // res.status(400).send({
-    //   error: 'name or number cannot be empty',
-    // });
-  }
-  console.log('body ', body);
+
   const newPerson = new Persons({
     name: body.name,
     number: body.number,
