@@ -40,50 +40,52 @@ function App() {
           setErrorMessage(null);
         }, 5000);
       });
-      setNewName('');
-      setNewNumber('');
-    } else if (newName && newNumber) {
-      const newPerson = {
-        name: newName,
-        number: newNumber,
-      };
-      personService
-        .create(newPerson)
-        .then((newContact) => {
-          setPersons(persons.concat(newContact));
+    } else {
+      if (newName && newNumber) {
+        const newPerson = {
+          name: newName,
+          number: newNumber,
+        };
+        personService
+          .create(newPerson)
+          .then((newContact) => {
+            setPersons(persons.concat(newContact));
 
-          setSuccessMessage(`Added ${newPerson.name}`);
-          setTimeout(() => {
-            setErrorMessage(null);
-          }, 5000);
-        })
-        .catch((error) => {
-          setErrorMessage(error.response.data.error);
-        });
+            setSuccessMessage(`Added ${newPerson.name}`);
+            setTimeout(() => {
+              setErrorMessage(null);
+            }, 5000);
+          })
+          .catch((error) => {
+            setErrorMessage(error.response.data.error);
+          });
+      }
     }
     setNewName('');
     setNewNumber('');
   };
 
   const removeContact = (toDelete) => {
-    personService
-      .deleteContact(toDelete.id, toDelete)
-      .then(() => {
-        window.confirm(`Delete ${toDelete.name}`);
-        setPersons(persons.filter((person) => person.id !== toDelete.id));
-      })
-      .catch(() => {
-        setErrorMessage(
-          `Information of ${toDelete.name} has already been removed from the server`
-        );
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);
-      });
-    setSuccessMessage(`Removed ${toDelete.name}`);
-    setTimeout(() => {
-      setSuccessMessage(null);
-    }, 5000);
+    const confirm = window.confirm(`Delete ${toDelete.name}`);
+    if (confirm) {
+      personService
+        .deleteContact(toDelete.id)
+        .then(() => {
+          setPersons(persons.filter((person) => person.id !== toDelete.id));
+        })
+        .catch(() => {
+          setErrorMessage(
+            `Information of ${toDelete.name} has already been removed from the server`
+          );
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000);
+        });
+      setSuccessMessage(`Removed ${toDelete.name}`);
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 5000);
+    }
   };
 
   const handleNameChange = (event) => {

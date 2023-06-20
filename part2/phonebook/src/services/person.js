@@ -17,8 +17,8 @@ const update = (id, newObject) => {
   return request.then((response) => response.data);
 };
 
-const deleteContact = (id, newObject) => {
-  const request = axios.delete(`${baseURL}/${id}`, newObject);
+const deleteContact = (id) => {
+  const request = axios.delete(`${baseURL}/${id}`);
   return request.then((response) => response.data);
 };
 
