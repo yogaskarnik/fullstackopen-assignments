@@ -3,9 +3,17 @@ const dummy = (blogs) => {
 }
 
 const totalLikes = (listOfBlogs) => {
-  return listOfBlogs
-    .map((blogs) => blogs.likes)
-    .reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+  return listOfBlogs.reduce(
+    (accumulator, blogs) => accumulator + blogs.likes,
+    0
+  )
 }
 
-module.exports = { dummy, totalLikes }
+const favoriteBlog = (listOfBlogs) => {
+  return listOfBlogs.reduce(
+    (prev, current) => (prev.likes > current.likes ? prev : current),
+    {}
+  )
+}
+
+module.exports = { dummy, totalLikes, favoriteBlog }
