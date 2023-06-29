@@ -154,6 +154,27 @@ describe('validate properties', () => {
   })
 })
 
+describe('blog can be updated', () => {
+  test('update likes property of a blog with specific id', async () => {
+    const blogsInDB = await helper.blogsInDb()
+    const blogToBeUpdated = blogsInDB[0]
+    const updateBlog = { ...blogToBeUpdated, likes: 299 }
+
+    await api
+      .put(`/api/blogs/${updateBlog.id}`)
+      .send(updateBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const updatedBlog = await helper.blogsInDb()
+    const updateBlogsInDb = updatedBlog.find(
+      (blog) => blog.id === updateBlog.id
+    )
+
+    expect(updateBlogsInDb.likes).toBe(299)
+  })
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
