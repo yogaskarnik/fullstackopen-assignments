@@ -102,6 +102,29 @@ test('verify the unique identifier is named id', async () => {
   expect(blog.id).toBeDefined()
 })
 
+test('validate when likes property defaults to zero', async () => {
+  const newBlog = {
+    title: 'What happens when the likes property is set to zero',
+    author: 'Amazing author',
+    url: 'http://www.test.com/abc.html',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+  const blogs = response.body
+  const blogCreated = blogs.find(
+    (blog) =>
+      blog.title === 'What happens when the likes property is set to zero'
+  )
+
+  expect(blogCreated.likes).toBe(0)
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
