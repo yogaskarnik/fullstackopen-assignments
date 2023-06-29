@@ -38,7 +38,7 @@ test('a specific blog is within the returned blogs', async () => {
 test('a valid blog can be added', async () => {
   const newBlog = {
     title: 'async/await simplifies making async calls',
-    author: 'test author',
+    author: 'Best author',
     url: 'http://www.test.com/abc.html',
     likes: 5,
   }
