@@ -94,6 +94,14 @@ test('a blog entry can be deleted', async () => {
   expect(content).not.toContain(blogToDelete.title)
 })
 
+test('verify the unique identifier is named id', async () => {
+  const blogsInDB = await helper.blogsInDb()
+
+  const blog = blogsInDB[0]
+
+  expect(blog.id).toBeDefined()
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
