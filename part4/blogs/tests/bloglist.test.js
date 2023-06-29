@@ -125,6 +125,26 @@ test('validate when likes property defaults to zero', async () => {
   expect(blogCreated.likes).toBe(0)
 })
 
+test('validate when the title property is empty', async () => {
+  const newBlog = {
+    url: 'http://titleisempty.com',
+    author: 'Best author',
+    likes: 5,
+  }
+
+  await api.post('/api/blogs').send(newBlog).expect(400)
+})
+
+test('validate when the url property is empty', async () => {
+  const newBlog = {
+    title: 'Validating request when url is empty',
+    author: 'Best author',
+    likes: 5,
+  }
+
+  await api.post('/api/blogs').send(newBlog).expect(400)
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
