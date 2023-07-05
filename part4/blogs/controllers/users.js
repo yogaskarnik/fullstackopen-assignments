@@ -3,12 +3,17 @@ const usersRouter = require('express').Router()
 const User = require('../models/user')
 
 usersRouter.get('/', async (request, response) => {
-  const users = await User.find({})
+  const users = await User.find({}).populate('blog', {
+    title: 1,
+    author: 1,
+    url: 1,
+    likes: 1,
+  })
   response.json(users)
 })
 
 usersRouter.post('/', async (request, response) => {
-  const { username, name, password } = request.body
+  const { username, name, password, blog } = request.body
   if (!username || !password) {
     return response
       .status(400)
@@ -34,6 +39,7 @@ usersRouter.post('/', async (request, response) => {
     username,
     name,
     passowrdHash,
+    blog: blog,
   })
 
   const savedUser = await user.save()

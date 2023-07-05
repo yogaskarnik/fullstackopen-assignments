@@ -3,7 +3,10 @@ const Blog = require('../models/blog')
 
 blogRouter.get('/', async (request, response) => {
   try {
-    const blogs = await Blog.find({})
+    const blogs = await Blog.find({}).populate('user', {
+      username: 1,
+      name: 1,
+    })
     response.json(blogs)
   } catch (exception) {
     response.status(400).json(exception)
@@ -52,6 +55,7 @@ blogRouter.put('/:id', (request, response, next) => {
     author: body.author,
     url: body.url,
     likes: body.likes,
+    user: blog.user.id,
   }
 
   Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
