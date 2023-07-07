@@ -28,17 +28,9 @@ blogRouter.get('/:id', async (request, response) => {
   }
 })
 
-const getTokenFrom = (request) => {
-  const authorization = request.get('authorization')
-  if (authorization && authorization.startsWith('Bearer ')) {
-    return authorization.substring(7)
-  }
-  return null
-}
-
 blogRouter.post('/', async (request, response) => {
   const blog = new Blog(request.body)
-  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+  const decodedToken = jwt.verify(request.token, process.env.SECRET)
   if (!decodedToken.id) {
     return response.status(401).json({ error: 'invalid token' })
   }
