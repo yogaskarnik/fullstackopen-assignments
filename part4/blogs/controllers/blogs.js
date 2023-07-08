@@ -1,7 +1,6 @@
-const jwt = require('jsonwebtoken')
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
-const User = require('../models/user')
+const middleware = require('../utils/middleware')
 
 blogRouter.get('/', async (request, response) => {
   try {
@@ -28,21 +27,16 @@ blogRouter.get('/:id', async (request, response) => {
   }
 })
 
-blogRouter.post('/', async (request, response) => {
+blogRouter.post('/', middleware.userExtractor, async (request, response) => {
   const blog = new Blog(request.body)
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: 'invalid token' })
-  }
-  const user = await User.findById(decodedToken.id)
-
+  const userId = request.userId
   try {
     const newBlog = new Blog({
       title: blog.title,
       author: blog.author,
       url: blog.url,
       likes: blog.likes,
-      user: user._id,
+      user: userId,
     })
 
     const savedBlog = await newBlog.save()
@@ -52,24 +46,25 @@ blogRouter.post('/', async (request, response) => {
   }
 })
 
-blogRouter.delete('/:id', async (request, response) => {
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
-  if (!decodedToken.id) {
-    response.status(401).json({ error: 'invalid token' })
-  }
-  try {
-    const blog = await Blog.findById(request.params.id)
-    if (blog.user.toString() !== decodedToken.id.toString()) {
-      response.status(401).json({ error: 'invalid user' })
+blogRouter.delete(
+  '/:id',
+  middleware.userExtractor,
+  async (request, response, next) => {
+    const userId = request.userId
+    try {
+      const blog = await Blog.findById(request.params.id)
+      if (blog.user.toString() !== userId) {
+        response.status(401).json({ error: 'invalid user' })
+      }
+      const del = await Blog.deleteOne()
+      if (del.acknowledged) {
+        response.status(204).end()
+      }
+    } catch (exception) {
+      next(exception)
     }
-    const del = await Blog.deleteOne()
-    if (del.acknowledged) {
-      response.status(204).end()
-    }
-  } catch (exception) {
-    response.status(400).json({ error: exception })
   }
-})
+)
 
 blogRouter.put('/:id', (request, response, next) => {
   const body = request.body
