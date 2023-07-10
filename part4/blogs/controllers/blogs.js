@@ -1,5 +1,6 @@
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const middleware = require('../utils/middleware')
 
 blogRouter.get('/', async (request, response) => {
@@ -28,18 +29,21 @@ blogRouter.get('/:id', async (request, response) => {
 })
 
 blogRouter.post('/', middleware.userExtractor, async (request, response) => {
-  const blog = new Blog(request.body)
   const userId = request.userId
+  const user = await User.findById(userId)
   try {
     const newBlog = new Blog({
-      title: blog.title,
-      author: blog.author,
-      url: blog.url,
-      likes: blog.likes,
+      title: request.body.title,
+      author: request.body.author,
+      url: request.body.url,
+      likes: request.body.likes,
       user: userId,
     })
 
     const savedBlog = await newBlog.save()
+    user.blog = user.blog.concat(newBlog._id)
+    await user.save()
+
     response.status(201).json(savedBlog)
   } catch (exception) {
     response.status(400).json(exception)
@@ -53,6 +57,7 @@ blogRouter.delete(
     const userId = request.userId
     try {
       const blog = await Blog.findById(request.params.id)
+
       if (blog.user.toString() !== userId) {
         response.status(401).json({ error: 'invalid user' })
       }
@@ -66,7 +71,7 @@ blogRouter.delete(
   }
 )
 
-blogRouter.put('/:id', (request, response, next) => {
+blogRouter.put('/:id', async (request, response) => {
   const body = request.body
 
   const blog = {
@@ -74,14 +79,15 @@ blogRouter.put('/:id', (request, response, next) => {
     author: body.author,
     url: body.url,
     likes: body.likes,
-    user: blog.user.id,
+    user: body.user.id,
   }
 
-  Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
-    .then((updatedBloglist) => {
-      response.json(updatedBloglist)
-    })
-    .catch((error) => next(error))
+  const updatedBloglist = await Blog.findByIdAndUpdate(
+    request.params.id,
+    blog,
+    { new: true }
+  )
+  response.status(200).json(updatedBloglist)
 })
 
 module.exports = blogRouter

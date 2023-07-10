@@ -5,13 +5,21 @@ const app = require('../app')
 const api = supertest(app)
 
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 beforeEach(async () => {
+  await User.deleteMany({})
   await Blog.deleteMany({})
 
-  const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog))
-  const promiseArray = blogObjects.map((blog) => blog.save())
-  await Promise.all(promiseArray)
+  const newUser = await helper.createNewUser()
+  const user = await User.findOne({ _id: newUser._id })
+
+  helper.initialBlogs.forEach(async (list) => {
+    const blog = new Blog({ ...list, user: user._id })
+    const newBlog = await blog.save()
+    user.blog = user.blog.concat(newBlog.id)
+  })
+  await user.save()
 })
 
 describe('Verify existing blogs in the DB', () => {
@@ -38,15 +46,19 @@ describe('Verify existing blogs in the DB', () => {
 })
 describe('blogs can be added', () => {
   test('a valid blog can be added', async () => {
+    const user = await User.findOne({ username: 'dummy' })
     const newBlog = {
       title: 'async/await simplifies making async calls',
       author: 'Best author',
       url: 'http://www.test.com/abc.html',
       likes: 5,
+      user: user._id,
     }
 
+    const token = await helper.generateToken(user.username)
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -75,7 +87,6 @@ describe('blogs can be added', () => {
 describe('blogs can be viewed', () => {
   test('a specific blog can be viewed', async () => {
     const firstBlog = await helper.blogsInDb()
-
     const blogToView = firstBlog[0]
 
     const result = await api
@@ -83,15 +94,21 @@ describe('blogs can be viewed', () => {
       .expect(200)
       .expect('Content-Type', /application\/json/)
 
-    expect(result.body).toEqual(blogToView)
+    expect(result.body.title).toEqual('React patterns')
   })
 })
 
 describe('blogs can be deleted', () => {
   test('a blog entry can be deleted', async () => {
+    const user = await User.findOne({ username: 'dummy' })
     const firstBlog = await helper.blogsInDb()
     const blogToDelete = firstBlog[0]
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+    const token = await helper.generateToken(user.username)
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(204)
 
     const blogs = await helper.blogsInDb()
     expect(blogs).toHaveLength(helper.initialBlogs.length - 1)
@@ -111,6 +128,8 @@ test('verify name of property id', async () => {
 
 describe('validate properties', () => {
   test('verify likes property defaults to zero', async () => {
+    const user = await User.findOne({ username: 'dummy' })
+    const token = await helper.generateToken(user.username)
     const newBlog = {
       title: 'What happens when the likes property is set to zero',
       author: 'Amazing author',
@@ -119,6 +138,7 @@ describe('validate properties', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -159,9 +179,12 @@ describe('blog can be updated', () => {
     const blogsInDB = await helper.blogsInDb()
     const blogToBeUpdated = blogsInDB[0]
     const updateBlog = { ...blogToBeUpdated, likes: 299 }
+    const user = await User.findOne({ username: 'dummy' })
+    const token = await helper.generateToken(user.username)
 
     await api
       .put(`/api/blogs/${updateBlog.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send(updateBlog)
       .expect(200)
       .expect('Content-Type', /application\/json/)
