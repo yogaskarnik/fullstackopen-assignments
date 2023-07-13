@@ -31,6 +31,13 @@ const App = () => {
     event.preventDefault()
     try {
       const user = await loginService.login({ username, password })
+      if (user) {
+      } else {
+        setErrorMessage('Username or password wrong')
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      }
       window.localStorage.setItem('loggedInBlogUser', JSON.stringify(user))
       blogService.setToken(user.token)
       setUser(user)
@@ -40,8 +47,8 @@ const App = () => {
       setTimeout(() => {
         setSucessMessage()
       }, 5000)
-    } catch (exception) {
-      setErrorMessage('Wrong credentials')
+    } catch (error) {
+      setErrorMessage(error.response.data.error)
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -67,11 +74,18 @@ const App = () => {
       }
       const blogCreated = await blogService.create(newBlog)
       setBlogs(blogs.concat(blogCreated))
+      setSucessMessage(
+        `a new blog ${blogCreated.title} by ${blogCreated.author}`
+      )
+      setTimeout(() => {
+        setSucessMessage(null)
+      }, 5000)
+
       setTitle('')
       setAuthor('')
       setUrl('')
-    } catch (exception) {
-      setErrorMessage(exception)
+    } catch (error) {
+      setErrorMessage(error.response.data.error)
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -79,8 +93,11 @@ const App = () => {
   }
   const loginForm = () => (
     <div>
-      <h1>Blog application</h1>
-      <h2>Login</h2>
+      <h2>log in to application</h2>
+      <Notification
+        message={errorMessage || sucessMessage}
+        type={errorMessage ? 'error' : 'success'}
+      ></Notification>
       <form onSubmit={handleLogin}>
         <div>
           username
@@ -106,6 +123,15 @@ const App = () => {
   )
   const blogForm = () => (
     <div>
+      <h2>blogs</h2>
+      <Notification
+        message={errorMessage || sucessMessage}
+        type={errorMessage ? 'error' : 'success'}
+      ></Notification>
+      <div>
+        {user.name} logged in
+        <button onClick={handleLogout}>logout</button>
+      </div>
       <h2>create new</h2>
       <form onSubmit={handleCreateBlog}>
         <div>
@@ -152,22 +178,8 @@ const App = () => {
   }
   return (
     <div>
-      <Notification
-        message={errorMessage || sucessMessage}
-        type={errorMessage ? 'error' : 'success'}
-      ></Notification>
-
       {user === null && loginForm()}
-      {user && (
-        <div>
-          <h2>blogs</h2>
-          <div>
-            {user.name} logged in
-            <button onClick={handleLogout}>logout</button>
-          </div>
-          {blogForm()}
-        </div>
-      )}
+      {user && <div>{blogForm()}</div>}
     </div>
   )
 }
