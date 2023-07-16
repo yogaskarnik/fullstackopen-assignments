@@ -15,6 +15,7 @@ const App = () => {
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
   const [user, setUser] = useState(null)
+  const [formVisible, setFormVisible] = useState(false)
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
@@ -80,7 +81,7 @@ const App = () => {
       setTimeout(() => {
         setSucessMessage(null)
       }, 5000)
-
+      setFormVisible(false)
       setTitle('')
       setAuthor('')
       setUrl('')
@@ -94,10 +95,6 @@ const App = () => {
   const loginForm = () => (
     <div>
       <h2>log in to application</h2>
-      <Notification
-        message={errorMessage || sucessMessage}
-        type={errorMessage ? 'error' : 'success'}
-      ></Notification>
       <form onSubmit={handleLogin}>
         <div>
           username
@@ -121,53 +118,54 @@ const App = () => {
       </form>
     </div>
   )
-  const blogForm = () => (
-    <div>
-      <h2>blogs</h2>
-      <Notification
-        message={errorMessage || sucessMessage}
-        type={errorMessage ? 'error' : 'success'}
-      ></Notification>
+  const blogForm = () => {
+    const showWhenVisible = { display: formVisible ? '' : 'none' }
+    const hideWhenVisible = { display: formVisible ? 'none' : '' }
+    return (
       <div>
-        {user.name} logged in
-        <button onClick={handleLogout}>logout</button>
+        <div style={hideWhenVisible}>
+          <button onClick={() => setFormVisible(true)}>create note</button>
+        </div>
+        <div style={showWhenVisible}>
+          <h2>create new</h2>
+          <form onSubmit={handleCreateBlog}>
+            <div>
+              title
+              <input
+                type="text"
+                value={title}
+                name="Title"
+                onChange={({ target }) => setTitle(target.value)}
+              />
+            </div>
+            <div>
+              author
+              <input
+                type="text"
+                value={author}
+                name="Author"
+                onChange={({ target }) => setAuthor(target.value)}
+              />
+            </div>
+            <div>
+              url
+              <input
+                type="text"
+                value={url}
+                name="Url"
+                onChange={({ target }) => setUrl(target.value)}
+              />
+            </div>
+            <button type="submit">create</button>
+          </form>
+          <button onClick={() => setFormVisible(false)}>cancel</button>
+        </div>
+        {blogs.map((blog) => (
+          <Blog key={blog.id} blog={blog} />
+        ))}
       </div>
-      <h2>create new</h2>
-      <form onSubmit={handleCreateBlog}>
-        <div>
-          title
-          <input
-            type="text"
-            value={title}
-            name="Title"
-            onChange={({ target }) => setTitle(target.value)}
-          />
-        </div>
-        <div>
-          author
-          <input
-            type="text"
-            value={author}
-            name="Author"
-            onChange={({ target }) => setAuthor(target.value)}
-          />
-        </div>
-        <div>
-          url
-          <input
-            type="text"
-            value={url}
-            name="Url"
-            onChange={({ target }) => setUrl(target.value)}
-          />
-        </div>
-        <button type="submit">create</button>
-      </form>
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
-    </div>
-  )
+    )
+  }
   const handleLogout = () => {
     window.localStorage.removeItem('loggedInBlogUser')
     setErrorMessage('Logged out successfully')
@@ -178,8 +176,20 @@ const App = () => {
   }
   return (
     <div>
+      <Notification
+        message={errorMessage || sucessMessage}
+        type={errorMessage ? 'error' : 'success'}
+      />
+      <div></div>
       {user === null && loginForm()}
-      {user && <div>{blogForm()}</div>}
+      {user && (
+        <div>
+          <h2>blogs</h2>
+          {user.name} logged in
+          <button onClick={handleLogout}>logout</button>
+          {blogForm()}
+        </div>
+      )}
     </div>
   )
 }
