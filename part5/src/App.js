@@ -10,10 +10,8 @@ import './index.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
   const [sucessMessage, setSucessMessage] = useState(null)
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   useEffect(() => {
