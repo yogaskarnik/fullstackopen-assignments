@@ -17,14 +17,16 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
   }, [])
+
   useEffect(() => {
     const loggedInUserJSON = window.localStorage.getItem('loggedInBlogUser')
     if (loggedInUserJSON) {
-      const user = JSON.stringify(loggedInUserJSON)
+      const user = JSON.parse(loggedInUserJSON)
       setUser(user)
       blogService.setToken(user.token)
     }
   }, [])
+
   const handleLogin = async (performLogin) => {
     try {
       const user = await loginService.login(performLogin)
@@ -50,9 +52,11 @@ const App = () => {
       }, 5000)
     }
   }
+
   const handleCreateBlog = async (newBlog) => {
     try {
       const blogCreated = await blogService.create(newBlog)
+      blogCreated.user = user
       setBlogs(blogs.concat(blogCreated))
       setSucessMessage(
         `a new blog ${blogCreated.title} by ${blogCreated.author}`
