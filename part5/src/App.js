@@ -15,7 +15,14 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
+    const fetchData = async () => {
+      const blogs = await blogService.getAll()
+      blogs.sort((blogs1, blogs2) =>
+        blogs1.likes < blogs2.likes ? 1 : blogs1.likes > blogs2.likes ? -1 : 0
+      )
+      setBlogs(blogs)
+    }
+    fetchData()
   }, [])
 
   useEffect(() => {
