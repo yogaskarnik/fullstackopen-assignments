@@ -72,6 +72,26 @@ const App = () => {
     }
   }
 
+  const handleUpdateLikes = async (blogId) => {
+    try {
+      const blog = blogs.find((blog) => blog.id === blogId)
+      const blogToUpdate = {
+        ...blog,
+        likes: Number(blog.likes) + 1,
+        user: user,
+      }
+      await blogService.update(blogToUpdate.id, blogToUpdate)
+      setBlogs(
+        blogs.map((blog) => (blog.id !== blogToUpdate.id ? blog : blogToUpdate))
+      )
+    } catch (error) {
+      setErrorMessage(error.response.data.error)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+  }
+
   const handleLogout = () => {
     window.localStorage.removeItem('loggedInBlogUser')
     setErrorMessage('Logged out successfully')
@@ -106,7 +126,10 @@ const App = () => {
           <BlogForm createBlog={handleCreateBlog} />
         </Togglable>
       )}
-      {user !== null && blogs.map((blog) => <Blog key={blog.id} blog={blog} />)}
+      {user !== null &&
+        blogs.map((blog) => (
+          <Blog key={blog.id} blog={blog} handleClick={handleUpdateLikes} />
+        ))}
     </div>
   )
 }
