@@ -37,8 +37,7 @@ const App = () => {
   const handleLogin = async (performLogin) => {
     try {
       const user = await loginService.login(performLogin)
-      if (user) {
-      } else {
+      if (!user) {
         setErrorMessage('Username or password wrong')
         setTimeout(() => {
           setErrorMessage(null)

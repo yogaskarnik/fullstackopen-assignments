@@ -40,4 +40,5 @@ const LoginForm = ({ performLogin }) => {
     </div>
   )
 }
+
 export default LoginForm
