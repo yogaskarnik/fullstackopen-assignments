@@ -53,7 +53,7 @@ blogRouter.post('/', middleware.userExtractor, async (request, response) => {
 blogRouter.delete(
   '/:id',
   middleware.userExtractor,
-  async (request, response, next) => {
+  async (request, response) => {
     const userId = request.userId
     try {
       const blog = await Blog.findById(request.params.id)
@@ -66,7 +66,7 @@ blogRouter.delete(
         response.status(204).end()
       }
     } catch (exception) {
-      next(exception)
+      response.status(400).json(exception)
     }
   }
 )

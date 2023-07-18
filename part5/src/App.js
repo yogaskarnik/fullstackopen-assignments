@@ -99,6 +99,24 @@ const App = () => {
     }
   }
 
+  const handleDeleteBlog = async (blogId) => {
+    try {
+      let blogToDelete = blogs.find((blog) => blog.id === blogId)
+      const confirmDelete = window.confirm(
+        `Removing blog ${blogToDelete.title} by ${blogToDelete.author}`
+      )
+      if (confirmDelete) {
+        await blogService.deleteBlog(blogToDelete.id, blogToDelete)
+        setBlogs(blogs.filter((blog) => blog.id !== blogToDelete.id))
+      }
+    } catch (error) {
+      setErrorMessage(error.response.data.error)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+  }
+
   const handleLogout = () => {
     window.localStorage.removeItem('loggedInBlogUser')
     setErrorMessage('Logged out successfully')
@@ -135,7 +153,13 @@ const App = () => {
       )}
       {user !== null &&
         blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} handleClick={handleUpdateLikes} />
+          <Blog
+            key={blog.id}
+            blog={blog}
+            sessionUser={user}
+            handleUpdateLikes={handleUpdateLikes}
+            handleDeleteBlog={handleDeleteBlog}
+          />
         ))}
     </div>
   )
