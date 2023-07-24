@@ -87,4 +87,22 @@ describe('Blog App', function () {
       cy.get('#blog-like').click()
     })
   })
+
+  describe('user can delete blog', function () {
+    beforeEach(function () {
+      cy.login({ username: 'ykarnik', password: 'salainen' })
+
+      const blog = {
+        title: 'This blog can be deleted by the user who created it',
+        author: 'Yogas Karnik',
+        url: 'http://e2etesting.com',
+      }
+      cy.createBlog(blog)
+    })
+    it.only('user who created blog can delete it', function () {
+      cy.contains('This blog can be deleted by the user who created it')
+      cy.get('#blog-show').click()
+      cy.get('#blog-delete').click()
+    })
+  })
 })
