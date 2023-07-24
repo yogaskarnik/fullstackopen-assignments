@@ -7,6 +7,30 @@ describe('Blog App', function () {
       password: 'salainen',
     }
     cy.request('POST', 'http://localhost:3000/api/users/', user)
+
+    cy.request('POST', 'http://localhost:3000/api/login/', {
+      username: 'ykarnik',
+      password: 'salainen',
+    }).then(({ body }) => {
+      console.log(body)
+      localStorage.setItem('loggedInBlogUser', JSON.stringify(body))
+      const blog = {
+        title: 'Using Cypress for E2E testing',
+        author: 'Yogas Karnik',
+        url: 'http://e2etesting.com',
+        user: body.id,
+      }
+      cy.request({
+        url: 'http://localhost:3000/api/blogs/',
+        method: 'POST',
+        body: blog,
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem('loggedInBlogUser')).token
+          }`,
+        },
+      })
+    })
     cy.visit('http://localhost:3000/')
   })
 
@@ -59,7 +83,7 @@ describe('Blog App', function () {
       cy.get('#login-button').click()
     })
 
-    it.only('A blog can be created', function () {
+    it('A blog can be created', function () {
       cy.contains('create new blog').click()
       cy.get('#title').type('A new blog')
       cy.get('#author').type('Yogas')
@@ -69,6 +93,12 @@ describe('Blog App', function () {
       cy.get('#blog-list').contains('A new blog Yogas')
 
       cy.contains('A new blog Yogas').should('exist')
+    })
+  })
+  describe('users can like a blog', function () {
+    it.only('like a blog', function () {
+      cy.get('#blog-show').click()
+      cy.get('#blog-like').click()
     })
   })
 })
