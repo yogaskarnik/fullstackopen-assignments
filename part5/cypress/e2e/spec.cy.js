@@ -50,4 +50,25 @@ describe('Blog App', function () {
       cy.contains('Yogas Karnik logged in').should('not.exist')
     })
   })
+
+  describe('When logged in', function () {
+    beforeEach(function () {
+      cy.contains('login').click()
+      cy.get('#username').type('ykarnik')
+      cy.get('#password').type('salainen')
+      cy.get('#login-button').click()
+    })
+
+    it.only('A blog can be created', function () {
+      cy.contains('create new blog').click()
+      cy.get('#title').type('A new blog')
+      cy.get('#author').type('Yogas')
+      cy.get('#url').type('http://yogas.com')
+      cy.get('#create-blog').click()
+
+      cy.get('#blog-list').contains('A new blog Yogas')
+
+      cy.contains('A new blog Yogas').should('exist')
+    })
+  })
 })
