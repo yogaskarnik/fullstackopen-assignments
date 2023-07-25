@@ -1,12 +1,7 @@
 describe('Blog App', function () {
   beforeEach(function () {
     cy.request('POST', 'http://localhost:3000/api/testing/reset/')
-    const user = {
-      name: 'Yogas Karnik',
-      username: 'ykarnik',
-      password: 'salainen',
-    }
-    cy.request('POST', 'http://localhost:3000/api/users/', user)
+    cy.createDefaultUser()
     cy.visit('http://localhost:3000')
   })
 
@@ -99,10 +94,18 @@ describe('Blog App', function () {
       }
       cy.createBlog(blog)
     })
-    it.only('user who created blog can delete it', function () {
+    it('user who created blog can delete it', function () {
       cy.contains('This blog can be deleted by the user who created it')
       cy.get('#blog-show').click()
       cy.get('#blog-delete').click()
+    })
+
+    it('user who created the blog only can see it', function () {
+      cy.login({ username: 'krasane', password: 'salainen' })
+      cy.contains('This blog can be deleted by the user who created it')
+      cy.get('#blog-show').click()
+
+      cy.get('#blog-delete').should('not.exist')
     })
   })
 })
