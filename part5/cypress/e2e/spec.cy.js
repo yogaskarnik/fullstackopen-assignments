@@ -61,7 +61,7 @@ describe('Blog App', function () {
     it('A blog can be created', function () {
       cy.contains('create new blog').click()
 
-      cy.get('#blog-list').contains('Using Cypress for E2E testing')
+      cy.get('.blog-list').contains('Using Cypress for E2E testing')
 
       cy.contains('Using Cypress for E2E testing').should('exist')
     })
@@ -106,6 +106,53 @@ describe('Blog App', function () {
       cy.get('#blog-show').click()
 
       cy.get('#blog-delete').should('not.exist')
+    })
+  })
+
+  describe('blog with most likes', function () {
+    beforeEach(function () {
+      cy.login({ username: 'ykarnik', password: 'salainen' })
+      const blogWithMostLikes = {
+        title: 'The blog with most likes',
+        author: 'Amazing blogger 1',
+        url: 'http://test1.com',
+      }
+      cy.createBlog(blogWithMostLikes)
+      const blogWithSecondMostLikes = {
+        title: 'The blog with second most likes',
+        author: 'Amazing blogger 2',
+        url: 'http://test2.com',
+      }
+      cy.createBlog(blogWithSecondMostLikes)
+    })
+    it.only('blogs ordered according to likes', function () {
+      cy.contains('The blog with most likes Amazing blogger 1')
+        .contains('view')
+        .click()
+
+      cy.get('.blog-list')
+        .contains('The blog with most likes Amazing blogger 1')
+        .find('#blog-like')
+        .click()
+        .click()
+        .click()
+
+      cy.contains('The blog with second most likes Amazing blogger 2')
+        .contains('view')
+        .click()
+
+      cy.get('.blog-list')
+        .contains('The blog with second most likes Amazing blogger 2')
+        .find('#blog-like')
+        .click()
+        .click()
+
+      cy.get('.blog-list')
+        .eq(0)
+        .should('contain', 'The blog with most likes Amazing blogger 1')
+      cy.get('.blog-list')
+        .eq(1)
+        .should('contain', 'The blog with second most likes Amazing blogger 2')
     })
   })
 })
