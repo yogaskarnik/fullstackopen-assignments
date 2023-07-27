@@ -49,10 +49,12 @@ const reducer = (state = initialState, action) => {
   }
 }
 
+//Action creator 1
 export const voteAnecdote = (id) => {
   return { type: 'VOTE', payload: id }
 }
 
+//Action creator 2
 export const createAnecdote = (content) => {
   return {
     type: 'NEW_ANECDOTE',
