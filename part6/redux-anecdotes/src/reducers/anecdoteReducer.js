@@ -36,7 +36,6 @@ const anecdotes = createSlice({
     },
 
     createAnecdote(state, action) {
-      console.log('action ', action)
       const newAnecdote = {
         content: action.payload,
         votes: 0,
