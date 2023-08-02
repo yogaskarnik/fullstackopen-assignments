@@ -1,7 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-const getId = () => Math.floor(100000 * Math.random())
-
 const anecdotes = createSlice({
   name: 'anecdotes',
   initialState: [],
