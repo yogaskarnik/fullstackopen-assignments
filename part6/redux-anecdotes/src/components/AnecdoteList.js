@@ -31,13 +31,6 @@ const AnecdoteList = () => {
     }
   }, [voteId, anecdotes, dispatch])
 
-  useEffect(() => {
-    const unsubscribe = () => {
-      setVoteId(null)
-    }
-    return unsubscribe
-  }, [])
-
   return (
     <div>
       {anecdotes

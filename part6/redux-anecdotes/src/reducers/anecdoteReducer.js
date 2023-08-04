@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import anecdotesService from '../services/anecdotes'
 
-const generateId = () => Number(Math.random() * 1000000)
+const generateId = () => Number((Math.random() * 1000000).toFixed(0))
 
 const anecdotes = createSlice({
   name: 'anecdotes',
@@ -28,11 +28,10 @@ export const initializeAnecdotes = () => {
 export const createAnecdote = (content) => {
   return async (dispatch) => {
     const newAnecdote = {
-      content,
+      content: content,
       votes: 0,
       id: generateId(),
     }
-
     const anecdoteToCreate = await anecdotesService.createNew(newAnecdote)
     dispatch(appendAnecdote(anecdoteToCreate))
   }
