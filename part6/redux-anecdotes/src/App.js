@@ -10,7 +10,7 @@ const App = () => {
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(initializeAnecdotes())
-  })
+  }, [dispatch])
   return (
     <div>
       <h2>Anecdotes</h2>
