@@ -4,7 +4,6 @@ import {
   showNotification,
   clearNotification,
 } from '../reducers/notificationReducer'
-import { useEffect, useState } from 'react'
 
 const AnecdoteList = () => {
   const anecdotes = useSelector((state) => {
@@ -14,22 +13,17 @@ const AnecdoteList = () => {
     })
   })
   const dispatch = useDispatch()
-  const [voteId, setVoteId] = useState(null)
 
   const vote = async (id) => {
-    await dispatch(voteAnecdote(id))
-    setVoteId(id)
-  }
-  useEffect(() => {
-    if (voteId !== null) {
-      const votedAnecdote = anecdotes.find((anecdote) => anecdote.id === voteId)
-      if (votedAnecdote) {
-        dispatch(showNotification(`you voted '${votedAnecdote.content}'`))
-        setTimeout(() => dispatch(clearNotification()), 5000)
-      }
-      setVoteId(null)
+    dispatch(voteAnecdote(id))
+    const votedAnecdote = anecdotes.find((anecdote) => anecdote.id === id)
+    if (votedAnecdote) {
+      dispatch(showNotification(`you voted '${votedAnecdote.content}'`, 5))
     }
-  }, [voteId, anecdotes, dispatch])
+    setTimeout(() => {
+      dispatch(clearNotification())
+    }, 5000)
+  }
 
   return (
     <div>
