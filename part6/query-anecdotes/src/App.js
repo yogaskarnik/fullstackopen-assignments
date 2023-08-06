@@ -1,15 +1,22 @@
 import { useQuery } from 'react-query'
 import AnecdoteForm from './components/AnecdoteForm'
 import Notification from './components/Notification'
-import { getAnecdotes } from './services/requests'
+import { getAnecdotes, voteAnecdote } from './services/requests'
 
 const App = () => {
   const handleVote = (anecdote) => {
-    console.log('vote')
+    const updateAnecdote = {
+      ...anecdote,
+      votes: anecdote.votes + 1,
+    }
+    voteAnecdote(updateAnecdote)
   }
 
   const result = useQuery('anecdotes', getAnecdotes, { retry: 1 })
-  console.log(result)
+
+  if (result.isLoading) {
+    return <div>Loading data...</div>
+  }
 
   if (result.isError) {
     return <div>anecdote server not available due to problems in server</div>
