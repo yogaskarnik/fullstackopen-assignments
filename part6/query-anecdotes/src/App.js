@@ -1,15 +1,28 @@
-import { useQuery } from 'react-query'
+import { useQuery, useQueryClient } from 'react-query'
 import AnecdoteForm from './components/AnecdoteForm'
 import Notification from './components/Notification'
 import { getAnecdotes, voteAnecdote } from './services/requests'
+import { useNotification } from './components/NotificationContext'
 
 const App = () => {
-  const handleVote = (anecdote) => {
+  const queryClient = useQueryClient()
+  const [notification, dispatchNotification] = useNotification()
+
+  const handleVote = async (anecdote) => {
     const updateAnecdote = {
       ...anecdote,
       votes: anecdote.votes + 1,
     }
-    voteAnecdote(updateAnecdote)
+    await voteAnecdote(updateAnecdote)
+
+    queryClient.setQueryData('anecdotes', (prevData) =>
+      prevData.map((a) => (a.id === updateAnecdote.id ? updateAnecdote : a))
+    )
+
+    dispatchNotification({
+      type: 'SET_NOTIFICATION',
+      payload: `anecdote '${anecdote.content}' voted`,
+    })
   }
 
   const result = useQuery('anecdotes', getAnecdotes, { retry: 1 })
