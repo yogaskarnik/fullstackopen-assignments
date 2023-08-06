@@ -30,6 +30,11 @@ const AnecdoteForm = () => {
       }
       console.log('new anecdote ', newAnecdote)
       createdAnecdoteMutation.mutate(newAnecdote)
+    } else {
+      dispatchNotification({
+        type: 'SET_NOTIFICATION',
+        payload: 'too short anecdote, must have length 5 or more',
+      })
     }
   }
 

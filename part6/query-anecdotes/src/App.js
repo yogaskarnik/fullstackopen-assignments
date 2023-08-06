@@ -6,6 +6,7 @@ import { useNotification } from './components/NotificationContext'
 
 const App = () => {
   const queryClient = useQueryClient()
+  // eslint-disable-next-line no-unused-vars
   const [notification, dispatchNotification] = useNotification()
 
   const handleVote = async (anecdote) => {
