@@ -24,13 +24,14 @@ const App = () => {
       id: 2,
     },
   ])
-
-  // eslint-disable-next-line no-unused-vars
   const [notification, setNotification] = useState('')
 
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000)
-    console.log('addNew anecdotes ', anecdotes)
+    setNotification(`a new anecdote ${anecdote.content} created!`)
+    setTimeout(() => {
+      setNotification('')
+    }, 5000)
     setAnecdotes(anecdotes.concat(anecdote))
   }
 
@@ -51,6 +52,7 @@ const App = () => {
   return (
     <div>
       <h1>Software anecdotes</h1>
+
       <Router>
         <Menu />
         <Routes>
@@ -58,7 +60,12 @@ const App = () => {
             path="/anecdotes/:id"
             element={<Anecdote anecdotes={anecdotes} />}
           />
-          <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
+          <Route
+            path="/"
+            element={
+              <AnecdoteList anecdotes={anecdotes} notification={notification} />
+            }
+          />
           <Route path="/createNew" element={<CreateNew addNew={addNew} />} />
           <Route
             path="/anecdotes"

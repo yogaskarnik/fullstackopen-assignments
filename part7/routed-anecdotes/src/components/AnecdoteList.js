@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom'
 
-const AnecdoteList = ({ anecdotes }) => {
+const AnecdoteList = ({ anecdotes, notification }) => {
   return (
     <div>
+      {notification && <p>{notification}</p>}
       <h2>Anecdotes</h2>
       <ul>
         {anecdotes.map((anecdote) => (
