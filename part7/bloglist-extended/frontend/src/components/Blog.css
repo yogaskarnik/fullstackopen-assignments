@@ -1,0 +1,21 @@
+.blog-list {
+  padding-top: 10px;
+  padding-left: 2px;
+  border-style: solid;
+  border-radius: 5px;
+  border-width: 1px;
+  margin-bottom: 5px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.user-info {
+  display: flex;
+  align-items: right; /* Align the text and the button vertically */
+  gap: 8px; /* Optional: for some space between the text and the button */
+}
