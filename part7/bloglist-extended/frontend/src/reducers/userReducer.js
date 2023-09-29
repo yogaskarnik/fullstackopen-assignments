@@ -1,22 +1,38 @@
 import { createSlice } from '@reduxjs/toolkit';
 import loginService from '../services/login';
 import blogService from '../services/blogs';
+import userService from '../services/userService';
 import { showNotification } from './notificationReducer';
 
 const user = createSlice({
   name: 'user',
-  initialState: null,
+  initialState: { currentUser: null, allUsers: [] },
   reducers: {
-    userLogin(state, action) {
-      return action.payload;
+    getAll(state, action) {
+      state.allUsers = action.payload;
     },
-    userLogoff() {
-      return null;
+    userLogin(state, action) {
+      state.currentUser = action.payload;
+    },
+    userLogoff(state) {
+      state.currentUser = null;
     },
   },
 });
 
-export const { userLogin, userLogoff } = user.actions;
+export const { getAll, userLogin, userLogoff } = user.actions;
+
+export const getAllUsers = () => {
+  return async (dispatch) => {
+    try {
+      const users = await userService.fetchAllUsers();
+      dispatch(getAll(users));
+    } catch (error) {
+      console.error('error loading users', error);
+      dispatch(showNotification(error.message || 'error loading users', 5));
+    }
+  };
+};
 
 export const loginUser = (credentials) => async (dispatch) => {
   try {

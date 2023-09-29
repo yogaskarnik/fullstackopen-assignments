@@ -7,9 +7,11 @@ import Blog from './components/Blog';
 import blogService from './services/blogs';
 import { userLogin } from './reducers/userReducer';
 import './index.css';
+import Users from './components/Users';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 const App = () => {
-  const user = useSelector((state) => state.user);
+  const currentUser = useSelector((state) => state.user.currentUser);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -24,14 +26,26 @@ const App = () => {
   return (
     <div>
       <Notification />
-      <div></div>
-      {user === null && <h2>log in to application</h2>}
-      {user === null && (
-        <Togglable buttonLabel="login">
-          <LoginForm />
-        </Togglable>
-      )}
-      {user !== null && <Blog sessionUser={user} />}
+      <Router>
+        {currentUser === null ? (
+          <>
+            <h2>Blog App Login</h2>
+            <Togglable buttonLabel="login">
+              <LoginForm />
+            </Togglable>
+          </>
+        ) : (
+          <>
+            <Routes>
+              <Route
+                path="/"
+                element={<Blog sessionUser={currentUser} />}
+              ></Route>
+              <Route path="/users" element={<Users />}></Route>
+            </Routes>
+          </>
+        )}
+      </Router>
     </div>
   );
 };
