@@ -6,6 +6,7 @@ const requestLogger = (request, response, next) => {
   logger.info('Hostname:', request.headers.host);
   logger.info('Path:  ', request.path);
   logger.info('Body:  ', request.body);
+  logger.info('URL:  ', request.url);
   logger.info('---');
   next();
 };

@@ -9,27 +9,27 @@ const Users = () => {
   useEffect(() => {
     dispatch(getAllUsers());
   }, [dispatch]);
-
-  console.log(users);
+  console.log('Users component ', users);
 
   return (
     <div>
-      <h3>Users</h3>
-      {users && users.length > 0 ? (
-        <table>
-          {/* ... table headers ... */}
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id}>
-                <td>{user.name}</td>
-                <td>{user.blogs.length}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p>Loading users or no users found...</p>
-      )}
+      <h2>Users</h2>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Number of Blogs</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user) => (
+            <tr key={user.id}>
+              <td>{user.name}</td>
+              <td>{user.blog.length}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

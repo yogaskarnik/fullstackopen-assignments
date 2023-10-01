@@ -1,3 +1,4 @@
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Notification from './components/Notification';
@@ -6,9 +7,10 @@ import Togglable from './components/Togglable';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
 import { userLogin } from './reducers/userReducer';
-import './index.css';
 import Users from './components/Users';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { logoutUser } from './reducers/userReducer';
+import { showNotification } from './reducers/notificationReducer';
+import './index.css';
 
 const App = () => {
   const currentUser = useSelector((state) => state.user.currentUser);
@@ -23,6 +25,11 @@ const App = () => {
     }
   }, [dispatch]);
 
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    dispatch(showNotification('Logout successful!', 5));
+  };
+
   return (
     <div>
       <Notification />
@@ -36,11 +43,18 @@ const App = () => {
           </>
         ) : (
           <>
+            <div className="header">
+              <h2>blogs</h2>
+              {currentUser?.username !== null && (
+                <div className="user-info">
+                  {currentUser?.name} logged in
+                  <button onClick={() => handleLogout()}>logout</button>
+                  <span></span>
+                </div>
+              )}
+            </div>
             <Routes>
-              <Route
-                path="/"
-                element={<Blog sessionUser={currentUser} />}
-              ></Route>
+              <Route path="/" element={<Blog />}></Route>
               <Route path="/users" element={<Users />}></Route>
             </Routes>
           </>

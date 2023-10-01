@@ -5,7 +5,8 @@ import {
   toggleBlogVisibility,
 } from '../reducers/bloglistReducer';
 
-const BlogList = ({ sessionUser }) => {
+const BlogList = () => {
+  const currentUser = useSelector((state) => state.user.currentUser);
   const blogs = useSelector((state) => state.bloglist);
   const visibility = useSelector((state) => {
     const visibilityObj = {};
@@ -57,7 +58,7 @@ const BlogList = ({ sessionUser }) => {
             <br />
             {blog?.user?.name}
             <br />
-            {blog?.user?.username === sessionUser?.username ? (
+            {blog?.user?.username === currentUser?.username ? (
               <button
                 id="blog-delete"
                 onClick={() => handleDeleteBlog(blog.id)}
