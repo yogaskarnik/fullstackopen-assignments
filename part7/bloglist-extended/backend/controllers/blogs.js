@@ -11,7 +11,8 @@ blogRouter.get('/', async (request, response) => {
     });
     response.json(blogs);
   } catch (exception) {
-    response.status(400).json(exception);
+    console.error('Error ', exception);
+    response.status(400).json({ error: exception.message });
   }
 });
 
@@ -24,14 +25,16 @@ blogRouter.get('/:id', async (request, response) => {
       response.status(404).end();
     }
   } catch (exception) {
-    response.status(400).json(exception);
+    console.error('Error ', exception);
+    response.status(400).json({ error: exception.message });
   }
 });
 
 blogRouter.post('/', middleware.userExtractor, async (request, response) => {
   const userId = request.userId;
-  const user = await User.findById(userId);
   try {
+    const user = await User.findById(userId);
+
     const newBlog = new Blog({
       title: request.body.title,
       author: request.body.author,
@@ -41,7 +44,7 @@ blogRouter.post('/', middleware.userExtractor, async (request, response) => {
     });
 
     const savedBlog = await newBlog.save();
-    user.blog = user.blog.concat(newBlog._id);
+    user.blogs = user.blogs.concat(newBlog._id);
     await user.save();
 
     const populatedBlog = await Blog.findById(savedBlog._id).populate('user', {
@@ -52,7 +55,8 @@ blogRouter.post('/', middleware.userExtractor, async (request, response) => {
 
     response.status(201).json(populatedBlog);
   } catch (exception) {
-    response.status(400).json(exception);
+    console.error('Error ', exception);
+    response.status(400).json({ error: exception.message });
   }
 });
 
@@ -79,30 +83,36 @@ blogRouter.delete(
         response.status(404).json({ error: 'blog not found' });
       }
     } catch (exception) {
-      response.status(400).json(exception);
+      console.error('Error ', exception);
+      response.status(400).json({ error: exception.message });
     }
   }
 );
 
 blogRouter.put('/:id', async (request, response) => {
-  const userId = request.userId;
-  const user = await User.findById(userId);
-  const body = request.body;
+  try {
+    const userId = request.userId;
+    const user = await User.findById(userId);
+    const body = request.body;
 
-  const blog = {
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes,
-    user: user.id,
-  };
+    const blog = {
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes,
+      user: user.id,
+    };
 
-  const updatedBloglist = await Blog.findByIdAndUpdate(
-    request.params.id,
-    blog,
-    { new: true }
-  );
-  response.status(200).json(updatedBloglist);
+    const updatedBloglist = await Blog.findByIdAndUpdate(
+      request.params.id,
+      blog,
+      { new: true }
+    );
+    response.status(200).json(updatedBloglist);
+  } catch (error) {
+    console.error('Error ', exception);
+    response.status(400).json({ error: exception.message });
+  }
 });
 
 module.exports = blogRouter;

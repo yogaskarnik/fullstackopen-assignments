@@ -11,6 +11,7 @@ import Users from './components/Users';
 import { logoutUser } from './reducers/userReducer';
 import { showNotification } from './reducers/notificationReducer';
 import './index.css';
+import UserDetail from './components/UserDetail';
 
 const App = () => {
   const currentUser = useSelector((state) => state.user.currentUser);
@@ -56,6 +57,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Blog />}></Route>
               <Route path="/users" element={<Users />}></Route>
+              <Route path="/users/:id" element={<UserDetail />} />
             </Routes>
           </>
         )}

@@ -32,8 +32,6 @@ const bloglist = createSlice({
     },
     delBlog(state, action) {
       const { id } = action.payload;
-      console.log('Reducer deleting blogId:', id);
-
       const newState = state.filter((blog) => blog.id !== id);
       return newState;
     },
@@ -90,8 +88,6 @@ export const storeBlog = (newBlog) => async (dispatch) => {
 
 export const removeBlog = (blogId) => async (dispatch) => {
   try {
-    console.log('Dispatching deletion for blogId:', blogId);
-
     const deletedBlogResponse = await blogService.deleteBlog(blogId);
     if (deletedBlogResponse.status === 204 || !deletedBlogResponse) {
       dispatch(delBlog({ id: blogId }));

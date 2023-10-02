@@ -4,13 +4,27 @@ const User = require('../models/user');
 
 usersRouter.get('/', async (request, response) => {
   try {
-    const users = await User.find({}).populate('blog', {
+    const users = await User.find({}).populate('blogs', {
       title: 1,
       author: 1,
       url: 1,
       likes: 1,
     });
     response.json(users);
+  } catch (exception) {
+    response.status(400).json(exception);
+  }
+});
+
+usersRouter.get('/:id', async (request, response) => {
+  try {
+    const user = await User.findById(request.params.id).populate('blogs', {
+      title: 1,
+      author: 1,
+    });
+    console.log('usersRouter ', user);
+
+    return user ? response.json(user) : response.status(404).end();
   } catch (exception) {
     response.status(400).json(exception);
   }
