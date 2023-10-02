@@ -12,6 +12,19 @@ const getAll = async () => {
   return response.data;
 };
 
+const getById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('could not load blog:', error);
+    throw new Error(
+      error.response.data.error || 'could not load blog with id:',
+      id
+    );
+  }
+};
+
 const create = async (newObject) => {
   const config = {
     headers: { Authorization: token },
@@ -37,4 +50,4 @@ const deleteBlog = async (id) => {
 };
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default { getAll, create, update, deleteBlog, setToken };
+export default { getAll, getById, create, update, deleteBlog, setToken };
