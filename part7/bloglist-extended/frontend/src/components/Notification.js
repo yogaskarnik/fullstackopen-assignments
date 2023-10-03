@@ -6,7 +6,7 @@ const Notification = () => {
     return state.notification;
   });
 
-  return <div className="nitification-info">{notification.message}</div>;
+  return <div className="notification-info">{notification.message}</div>;
 };
 
 export default Notification;

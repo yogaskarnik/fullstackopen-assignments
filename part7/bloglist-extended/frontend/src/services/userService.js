@@ -13,9 +13,7 @@ const fetchAllUsers = async () => {
 
 const getById = async (id) => {
   try {
-    console.log('getById id ', id);
     const response = await axios.get(`${baseUrl}/${id}`);
-    console.log('response ', response.data);
     return response.data;
   } catch (error) {
     console.error('could not load user:', error);

@@ -1,3 +1,7 @@
+.navbar-style {
+  padding: 5px;
+}
+
 .error {
   color: red;
   background-color: lightgray;

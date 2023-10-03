@@ -22,8 +22,6 @@ usersRouter.get('/:id', async (request, response) => {
       title: 1,
       author: 1,
     });
-    console.log('usersRouter ', user);
-
     return user ? response.json(user) : response.status(404).end();
   } catch (exception) {
     response.status(400).json(exception);

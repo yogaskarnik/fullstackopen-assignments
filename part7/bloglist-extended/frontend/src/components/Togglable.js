@@ -1,33 +1,36 @@
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { Button } from 'react-bootstrap';
+import './Togglable.css'; // Import the CSS
 
 const Togglable = React.forwardRef((props, ref) => {
-  const [visible, setVisible] = useState(false)
-
-  const hideWhenVisible = { display: visible ? 'none' : '' }
-  const showWhenVisible = { display: visible ? '' : 'none' }
+  const [visible, setVisible] = useState(false);
 
   const toggleVisibility = () => {
-    setVisible(!visible)
-  }
+    setVisible(!visible);
+  };
 
   return (
-    <div>
-      <div style={hideWhenVisible}>
-        <button onClick={toggleVisibility}>{props.buttonLabel}</button>
+    <div className="container">
+      <div className={visible ? 'hideWhenVisible' : ''}>
+        <Button onClick={toggleVisibility} type="input" size="sm">
+          {props.buttonLabel}
+        </Button>
       </div>
-      <div style={showWhenVisible}>
+      <div className={visible ? 'showWhenVisible' : 'hideWhenVisible'}>
         {props.children}
-        <button onClick={toggleVisibility}>cancel</button>
+        <Button onClick={toggleVisibility} type="reset" size="sm">
+          cancel
+        </Button>
       </div>
     </div>
-  )
-})
+  );
+});
 
 Togglable.propTypes = {
   buttonLabel: PropTypes.string.isRequired,
-}
+};
 
-Togglable.displayName = 'Togglable'
+Togglable.displayName = 'Togglable';
 
-export default Togglable
+export default Togglable;

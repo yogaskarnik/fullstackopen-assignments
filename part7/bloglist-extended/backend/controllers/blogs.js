@@ -30,6 +30,28 @@ blogRouter.get('/:id', async (request, response) => {
   }
 });
 
+blogRouter.post('/:id/comments', async (request, response) => {
+  try {
+    console.log('BACKEND request ', request.body);
+    const blog = await Blog.findById(request.params.id);
+    if (!blog) {
+      return response.status(404).json({ error: 'blog not found' });
+    }
+
+    const comment = request.body.comment;
+    if (!comment) {
+      return response.status(400).json({ error: 'comment must be provided' });
+    }
+
+    blog.comments.push(comment);
+    const updatedBlog = await blog.save();
+    response.status(201).json(updatedBlog);
+  } catch (error) {
+    console.error('Error ', error);
+    response.status(400).json({ error: error.message });
+  }
+});
+
 blogRouter.post('/', middleware.userExtractor, async (request, response) => {
   const userId = request.userId;
   try {

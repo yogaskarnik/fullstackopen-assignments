@@ -60,8 +60,38 @@ export const fetchBlogs = () => async (dispatch) => {
     dispatch(initializeBlogs(blogs));
   } catch (error) {
     console.error(error);
-    dispatch(showNotification('Failed to fetch blogs.', 5));
+    dispatch(
+      showNotification(
+        error.response?.data?.error ||
+          error.message ||
+          'Failed to fetch blogs.',
+        5
+      )
+    );
   }
+};
+
+export const storeComments = (blogId, newComment) => {
+  return async (dispatch, getState) => {
+    try {
+      const blog = getState().bloglist.find((blog) => blog.id === blogId);
+      let updatedComment = '';
+      if (blog) {
+        updatedComment = await blogService.createComment(blogId, newComment);
+        dispatch(updateBlog(updatedComment));
+      }
+    } catch (error) {
+      console.error('Error during storeComments:', error);
+      dispatch(
+        showNotification(
+          error.response?.data?.error ||
+            error.message ||
+            'Failed to store comment.',
+          5
+        )
+      );
+    }
+  };
 };
 
 export const updateLikes = (blogId) => async (dispatch, getState) => {
@@ -72,7 +102,14 @@ export const updateLikes = (blogId) => async (dispatch, getState) => {
     dispatch(incrementLikes({ id: blogId }));
   } catch (error) {
     console.error(error);
-    dispatch(showNotification(error.message || 'Failed to update likes.', 5));
+    dispatch(
+      showNotification(
+        error.response?.data?.error ||
+          error.message ||
+          'Failed to update likes.',
+        5
+      )
+    );
   }
 };
 
@@ -82,7 +119,14 @@ export const storeBlog = (newBlog) => async (dispatch) => {
     dispatch(createBlog(createdBlog));
   } catch (error) {
     console.error(error);
-    dispatch(showNotification('Failed to create blog.', 5));
+    dispatch(
+      showNotification(
+        error.response?.data?.error ||
+          error.message ||
+          'Failed to create blog.',
+        5
+      )
+    );
   }
 };
 
@@ -96,7 +140,14 @@ export const removeBlog = (blogId) => async (dispatch) => {
     }
   } catch (error) {
     console.error(error);
-    dispatch(showNotification(error.message || 'Failed to delete blog.', 5));
+    dispatch(
+      showNotification(
+        error.response?.data?.error ||
+          error.message ||
+          'Failed to delete blog.',
+        5
+      )
+    );
   }
 };
 

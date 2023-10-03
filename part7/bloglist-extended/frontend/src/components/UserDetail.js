@@ -6,7 +6,6 @@ const UserDetail = () => {
   const { id } = useParams();
   const [user, setUser] = useState(null);
 
-  console.log('id ', id);
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -19,8 +18,6 @@ const UserDetail = () => {
 
     fetchUser();
   }, [id]);
-
-  console.log('user ', user);
 
   return (
     <div>

@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Notification from './components/Notification';
@@ -13,6 +13,7 @@ import { showNotification } from './reducers/notificationReducer';
 import './index.css';
 import UserDetail from './components/UserDetail';
 import BlogDetail from './components/BlogDetail';
+import { Button } from 'react-bootstrap';
 
 const App = () => {
   const currentUser = useSelector((state) => state.user.currentUser);
@@ -33,7 +34,7 @@ const App = () => {
   };
 
   return (
-    <div>
+    <div className="container">
       <Notification />
       <Router>
         {currentUser === null ? (
@@ -44,24 +45,37 @@ const App = () => {
             </Togglable>
           </>
         ) : (
-          <>
-            <div className="header">
-              <h2>blogs</h2>
-              {currentUser?.username !== null && (
-                <div className="user-info">
-                  {currentUser?.name} logged in
-                  <button onClick={() => handleLogout()}>logout</button>
-                  <span></span>
-                </div>
-              )}
+          <div>
+            <div>
+              <Link className="navbar-style" to="/">
+                home
+              </Link>
+              <Link className="navbar-style" to="/blogs">
+                blogs
+              </Link>
+              <Link className="navbar-style" to="/users">
+                users
+              </Link>
+              {currentUser?.username} logged in
+              <Button
+                variant="primary"
+                type="submit"
+                onClick={() => handleLogout()}
+                size="sm"
+              >
+                logout
+              </Button>
             </div>
+
+            <h2>blogs</h2>
             <Routes>
               <Route path="/" element={<Blog />}></Route>
+              <Route path="/blogs" element={<Blog />}></Route>
               <Route path="/users" element={<Users />}></Route>
               <Route path="/users/:id" element={<UserDetail />} />
               <Route path="/blogs/:id" element={<BlogDetail />} />
             </Routes>
-          </>
+          </div>
         )}
       </Router>
     </div>

@@ -1,0 +1,11 @@
+.hideWhenVisible {
+  display: none;
+}
+
+.showWhenVisible {
+  display: initial;
+}
+
+.container {
+  /* Add other styles for container here */
+}

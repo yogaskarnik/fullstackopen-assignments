@@ -9,7 +9,6 @@ Cypress.Commands.add('login', ({ username, password }) => {
 });
 
 Cypress.Commands.add('createBlog', (blog) => {
-  console.log('user ', JSON.parse(localStorage.getItem('loggedInUser')));
   cy.request({
     url: 'http://localhost:3000/api/blogs/',
     method: 'POST',
