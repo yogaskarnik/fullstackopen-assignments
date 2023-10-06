@@ -18,6 +18,7 @@ const Authors = (props) => {
 
   const updateBirthYear = (event) => {
     event.preventDefault();
+    console.log('updateBirthYear ', name, ' ', born);
 
     changeBirthYear({ variables: { name, born } });
 
@@ -49,14 +50,21 @@ const Authors = (props) => {
         <form onSubmit={updateBirthYear}>
           <div>
             Author
-            <input
-              type="text"
+            <select
+              name="selectAuthors"
               value={name}
               onChange={({ target }) => setName(target.value)}
-            ></input>
+            >
+              <option value="" disabled>
+                Select an author
+              </option>
+              {data?.allAuthors?.map((a) => (
+                <option value={a.name}>{a.name}</option>
+              ))}
+            </select>
           </div>
           <div>
-            Birth Year
+            Set Birth Year
             <input
               type="number"
               value={born}
