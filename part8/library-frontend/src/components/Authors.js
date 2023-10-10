@@ -18,8 +18,6 @@ const Authors = (props) => {
 
   const updateBirthYear = (event) => {
     event.preventDefault();
-    console.log('updateBirthYear ', name, ' ', born);
-
     changeBirthYear({ variables: { name, born } });
 
     setName('');
@@ -59,7 +57,9 @@ const Authors = (props) => {
                 Select an author
               </option>
               {data?.allAuthors?.map((a) => (
-                <option value={a.name}>{a.name}</option>
+                <option key={a.id} value={a.name}>
+                  {a.name}
+                </option>
               ))}
             </select>
           </div>
