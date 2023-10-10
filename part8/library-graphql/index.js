@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 const typeDefs = require('./schema/typeDefs');
 const resolvers = require('./schema/resolvers');
+const jwt = require('jsonwebtoken');
+const User = require('./models/userSchema');
 
 const MONGO_DB_URI = process.env.MONGODB_URI;
 
@@ -26,6 +28,14 @@ const server = new ApolloServer({
 
 startStandaloneServer(server, {
   listen: { port: process.env.PORT },
+  context: async ({ req }) => {
+    const auth = req ? req.headers.authorization : null;
+    if (auth && auth.toLowerCase().startsWith('bearer ')) {
+      const decodedToken = jwt.verify(auth.substring(7), 'secret');
+      const currentUser = await User.findById(decodedToken.id);
+      return { currentUser };
+    }
+  },
 }).then(({ url }) => {
   console.log(`Server ready at ${url}`);
 });

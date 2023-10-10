@@ -1,6 +1,9 @@
 const Book = require('../models/bookSchema');
 const Author = require('../models/authorSchema');
+const User = require('../models/userSchema');
 const { GraphQLError } = require('graphql');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 const resolvers = {
   Query: {
@@ -52,10 +55,17 @@ const resolvers = {
         throw new GraphQLError('Error retrieving authors.');
       }
     },
+    me: async (root, args, context) => {
+      return context.currentUser;
+    },
   },
   Mutation: {
-    addBook: async (root, args) => {
+    addBook: async (root, args, context) => {
       try {
+        if (!context.currentUser) {
+          throw new GraphQLError('Authentication required.');
+        }
+
         let author = await Author.findOne({ name: args.author });
         if (!author) {
           author = new Author({ name: args.author });
@@ -70,18 +80,22 @@ const resolvers = {
         });
 
         const savedBook = await book.save();
+        return await Book.findById(savedBook._id).populate('author');
       } catch (err) {
         if (err.name === 'ValidationError') {
           for (field in err.errors) {
             throw new GraphQLError(err.errors[field].message);
           }
         }
+        console.error(err);
         throw new GraphQLError('Error adding author.');
       }
     },
     editAuthor: async (root, args) => {
       try {
-        console.log('editAuthor ', args);
+        if (!context.currentUser) {
+          throw new GraphQLError('Authentication required.');
+        }
 
         const author = await Author.findOne({ name: args.name });
         if (!author) throw new GraphQLError('Author not found.');
@@ -92,6 +106,46 @@ const resolvers = {
         console.error(error);
         throw new GraphQLError('Error updating author information.');
       }
+    },
+    createUser: async (root, args) => {
+      const saltRounds = 10;
+      const passwordHash = await bcrypt.hash('secret', saltRounds);
+
+      const user = new User({
+        username: args.username,
+        favoriteGenre: args.favoriteGenre,
+        passwordHash,
+      });
+
+      try {
+        await user.save();
+      } catch (error) {
+        throw new UserInputError(error.message, {
+          invalidArgs: args,
+        });
+      }
+      return user;
+    },
+    login: async (root, args) => {
+      const user = await User.findOne({ username: args.username });
+
+      if (!user) {
+        throw new UserInputError('Invalid username or password');
+      }
+      console.log('login user', user);
+
+      const passwordCorrect = await bcrypt.compare('secret', user.passwordHash);
+
+      if (!passwordCorrect) {
+        throw new UserInputError('Invalid username or password');
+      }
+
+      const userForToken = {
+        username: user.username,
+        id: user._id,
+      };
+
+      return { value: jwt.sign(userForToken, process.env.JWT_SECRET) };
     },
   },
 };
