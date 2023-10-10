@@ -36,14 +36,12 @@ const resolvers = {
           return book;
         });
       } catch (error) {
-        console.error(error);
-        throw new GraphQLError('Error retrieving books.', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-            invalidArgs: args.name,
-            error,
-          },
-        });
+        if (err.name === 'ValidationError') {
+          for (field in err.errors) {
+            throw new GraphQLError(err.errors[field].message);
+          }
+        }
+        throw new GraphQLError('Error retrieving books.');
       }
     },
     allAuthors: async () => {
@@ -52,16 +50,6 @@ const resolvers = {
       } catch (error) {
         console.error(error);
         throw new GraphQLError('Error retrieving authors.');
-      }
-    },
-  },
-  Author: {
-    bookCount: async (root, args) => {
-      try {
-        return await Book.countDocuments({ author: root._id });
-      } catch (error) {
-        console.error(error);
-        throw new GraphQLError('Error retrieving book count for author.');
       }
     },
   },
@@ -82,23 +70,23 @@ const resolvers = {
         });
 
         const savedBook = await book.save();
-      } catch (error) {
-        console.error(error);
-        throw new GraphQLError('Error adding book.', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-            invalidArgs: args.name,
-            error,
-          },
-        });
+      } catch (err) {
+        if (err.name === 'ValidationError') {
+          for (field in err.errors) {
+            throw new GraphQLError(err.errors[field].message);
+          }
+        }
+        throw new GraphQLError('Error adding author.');
       }
     },
     editAuthor: async (root, args) => {
       try {
+        console.log('editAuthor ', args);
+
         const author = await Author.findOne({ name: args.name });
         if (!author) throw new GraphQLError('Author not found.');
 
-        author.born = args.born;
+        author.born = args.setBornTo;
         return await author.save();
       } catch (error) {
         console.error(error);
