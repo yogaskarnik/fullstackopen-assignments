@@ -5,6 +5,7 @@ import { useState } from 'react';
 const Books = (props) => {
   const { loading, error, data } = useQuery(ALL_BOOKS);
   const [filter, setFilter] = useState(null);
+
   if (!props.show) {
     return null;
   }
