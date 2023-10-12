@@ -39,11 +39,12 @@ const resolvers = {
           return book;
         });
       } catch (error) {
-        if (err.name === 'ValidationError') {
+        if (err.name === 'ValidationError' && typeof err.errors === 'object') {
           for (field in err.errors) {
             throw new GraphQLError(err.errors[field].message);
           }
         }
+        console.error(err);
         throw new GraphQLError('Error retrieving books.');
       }
     },
@@ -63,7 +64,11 @@ const resolvers = {
     addBook: async (root, args, context) => {
       try {
         if (!context.currentUser) {
-          throw new GraphQLError('Authentication required.');
+          throw new GraphQLError('not authorized', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+            },
+          });
         }
 
         let author = await Author.findOne({ name: args.author });
@@ -82,7 +87,7 @@ const resolvers = {
         const savedBook = await book.save();
         return await Book.findById(savedBook._id).populate('author');
       } catch (err) {
-        if (err.name === 'ValidationError') {
+        if (err.name === 'ValidationError' && typeof err.errors === 'object') {
           for (field in err.errors) {
             throw new GraphQLError(err.errors[field].message);
           }
@@ -91,7 +96,7 @@ const resolvers = {
         throw new GraphQLError('Error adding author.');
       }
     },
-    editAuthor: async (root, args) => {
+    editAuthor: async (root, args, context) => {
       try {
         if (!context.currentUser) {
           throw new GraphQLError('Authentication required.');
@@ -132,8 +137,6 @@ const resolvers = {
       if (!user) {
         throw new UserInputError('Invalid username or password');
       }
-      console.log('login user', user);
-
       const passwordCorrect = await bcrypt.compare('secret', user.passwordHash);
 
       if (!passwordCorrect) {

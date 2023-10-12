@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "@apollo/server": "^4.9.3",
+    "apollo-server-express": "^3.12.1",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.3.1",
     "graphql": "^16.8.1",
