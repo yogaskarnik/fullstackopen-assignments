@@ -4,6 +4,7 @@ import Books from './components/Books';
 import NewBook from './components/NewBook';
 import Notify from './components/Notify';
 import LoginForm from './components/LoginForm';
+import Recommendations from './components/Recommendations';
 import { loadErrorMessages, loadDevMessages } from '@apollo/client/dev';
 import { __DEV__ } from '@apollo/client/utilities/globals';
 import { useApolloClient } from '@apollo/client';
@@ -43,6 +44,9 @@ const App = () => {
         {token ? (
           <>
             <button onClick={() => setPage('add')}>add book</button>
+            <button onClick={() => setPage('recommendation')}>
+              recommended
+            </button>
             <button onClick={logout}>logout</button>
           </>
         ) : (
@@ -54,6 +58,7 @@ const App = () => {
       <Authors show={page === 'authors'} />
       <Books show={page === 'books'} />
       <NewBook setError={notify} show={page === 'add'} />
+      <Recommendations setError={notify} show={page === 'recommendation'} />
       {page === 'login' && (
         <LoginForm setError={notify} setToken={setToken} setPage={setPage} />
       )}
