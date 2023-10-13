@@ -7,7 +7,8 @@ import LoginForm from './components/LoginForm';
 import Recommendations from './components/Recommendations';
 import { loadErrorMessages, loadDevMessages } from '@apollo/client/dev';
 import { __DEV__ } from '@apollo/client/utilities/globals';
-import { useApolloClient } from '@apollo/client';
+import { useApolloClient, useSubscription } from '@apollo/client';
+import { BOOK_ADDED } from './queries';
 
 const App = () => {
   const [token, setToken] = useState(
@@ -21,6 +22,24 @@ const App = () => {
     loadDevMessages();
     loadErrorMessages();
   }
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      console.log('useSubscription onData', data);
+      const addedBook = data.data.bookAdded;
+      window.alert(
+        `New book added: ${addedBook.title} by ${addedBook.author.name}`
+      );
+    },
+    onError: (error) => {
+      console.log('useSubscription onError ', error);
+      window.alert(`Error adding book: ${error}`);
+    },
+    onComplete: (data) => {
+      console.log('useSubscription onComplete ', data);
+    },
+  });
+
   const notify = (message) => {
     setErrorMessage(message);
     setTimeout(() => {
@@ -30,7 +49,7 @@ const App = () => {
 
   const logout = () => {
     setToken(null);
-    localStorage.clear();
+    localStorage.removeItem('library-user-token');
     client.resetStore();
     setPage('authors');
   };
