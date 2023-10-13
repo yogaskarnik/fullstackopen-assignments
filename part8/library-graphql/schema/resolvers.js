@@ -50,9 +50,30 @@ const resolvers = {
         throw new GraphQLError('Error retrieving books.');
       }
     },
-    allAuthors: async () => {
+    allAuthors: async (root, args, context, info) => {
       try {
-        return await Author.find({});
+        const authors = await Author.find({});
+
+        if (
+          info.fieldNodes[0].selectionSet.selections.some(
+            (sel) => sel.name.value === 'bookCount'
+          )
+        ) {
+          const bookCounts = await Book.aggregate([
+            { $group: { _id: '$author', count: { $sum: 1 } } },
+          ]);
+          const bookCountMap = {};
+          bookCounts.forEach(({ _id, count }) => {
+            bookCountMap[_id.toString()] = count;
+          });
+
+          return authors.map((author) => ({
+            ...author._doc,
+            bookCount: bookCountMap[author._id.toString()] || 0,
+          }));
+        }
+
+        return authors;
       } catch (error) {
         console.error(error);
         throw new GraphQLError('Error retrieving authors.');
@@ -132,7 +153,7 @@ const resolvers = {
       try {
         await user.save();
       } catch (error) {
-        throw new UserInputError(error.message, {
+        throw new GraphQLError(error.message, {
           invalidArgs: args,
         });
       }
@@ -142,12 +163,12 @@ const resolvers = {
       const user = await User.findOne({ username: args.username });
 
       if (!user) {
-        throw new UserInputError('Invalid username or password');
+        throw new GraphQLError('Invalid username or password');
       }
       const passwordCorrect = await bcrypt.compare('secret', user.passwordHash);
 
       if (!passwordCorrect) {
-        throw new UserInputError('Invalid username or password');
+        throw new GraphQLError('Invalid username or password');
       }
 
       const userForToken = {

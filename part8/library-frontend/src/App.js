@@ -46,7 +46,6 @@ const App = () => {
       updateCache(client.cache, { query: ALL_BOOKS }, addedBook);
     },
     onError: (error) => {
-      console.log('useSubscription onError ', error);
       notify(`Error adding book: ${error}`);
     },
   });
