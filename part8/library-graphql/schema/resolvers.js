@@ -4,6 +4,8 @@ const User = require('../models/userSchema');
 const { GraphQLError } = require('graphql');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const { PubSub } = require('graphql-subscriptions');
+const pubsub = new PubSub();
 
 const resolvers = {
   Query: {
@@ -85,7 +87,12 @@ const resolvers = {
         });
 
         const savedBook = await book.save();
-        return await Book.findById(savedBook._id).populate('author');
+        const savedBookWithId = await Book.findById(savedBook._id).populate(
+          'author'
+        );
+        pubsub.publish('BOOK_ADDED', { bookAdded: savedBookWithId });
+
+        return savedBookWithId;
       } catch (err) {
         if (err.name === 'ValidationError' && typeof err.errors === 'object') {
           for (field in err.errors) {
@@ -149,6 +156,11 @@ const resolvers = {
       };
 
       return { value: jwt.sign(userForToken, process.env.JWT_SECRET) };
+    },
+  },
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator('BOOK_ADDED'),
     },
   },
 };
